@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hematology Clinical Mastery (Koas)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-card: #1a1a24;
+  --accent-crimson: #dc2626;
+  --accent-crimson-glow: rgba(220, 38, 38, 0.3);
+  --accent-teal: #14b8a6;
+  --accent-amber: #f59e0b;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border-subtle: rgba(148, 163, 184, 0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse at 20% 30%, rgba(220, 38, 38, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(20, 184, 166, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 50% 100%, rgba(220, 38, 38, 0.03) 0%, transparent 40%);
+  background-attachment: fixed;
+}
+
+.title-font {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+/* Glass Card */
+.glass-card {
+  background: linear-gradient(145deg, rgba(26, 26, 36, 0.9) 0%, rgba(18, 18, 26, 0.95) 100%);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(20px);
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+}
+
+/* Animated Progress Ring */
+.progress-ring {
+  position: relative;
+  width: 60px;
+  height: 60px;
+}
+
+.progress-ring svg {
+  transform: rotate(-90deg);
+}
+
+.progress-ring-circle {
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.progress-ring-bg {
+  stroke: rgba(148, 163, 184, 0.1);
+}
+
+.progress-ring-fill {
+  stroke: var(--accent-crimson);
+  stroke-dasharray: 157;
+  stroke-dashoffset: 157;
+  transition: stroke-dashoffset 0.5s ease-out;
+  filter: drop-shadow(0 0 6px var(--accent-crimson-glow));
+}
+
+/* Option Buttons */
+.option-btn {
+  position: relative;
+  background: linear-gradient(145deg, rgba(30, 30, 42, 0.8) 0%, rgba(22, 22, 32, 0.9) 100%);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 12px;
+  padding: 16px 20px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.option-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.option-btn:hover::before {
+  transform: translateX(100%);
+}
+
+.option-btn:hover:not(:disabled) {
+  border-color: rgba(220, 38, 38, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px -10px rgba(220, 38, 38, 0.2);
+}
+
+.option-btn.correct {
+  background: linear-gradient(145deg, rgba(20, 184, 166, 0.15) 0%, rgba(20, 184, 166, 0.05) 100%);
+  border-color: var(--accent-teal);
+  box-shadow: 0 0 20px rgba(20, 184, 166, 0.2);
+}
+
+.option-btn.near {
+  background: linear-gradient(145deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.05) 100%);
+  border-color: var(--accent-amber);
+}
+
+.option-btn.wrong {
+  background: linear-gradient(145deg, rgba(220, 38, 38, 0.15) 0%, rgba(220, 38, 38, 0.05) 100%);
+  border-color: var(--accent-crimson);
+  opacity: 0.7;
+}
+
+.option-btn:disabled {
+  cursor: not-allowed;
+}
+
+.option-btn:disabled:not(.correct):not(.near):not(.wrong) {
+  opacity: 0.5;
+}
+
+/* Letter Badge */
+.letter-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-right: 12px;
+  background: rgba(148, 163, 184, 0.1);
+  color: var(--text-secondary);
+  transition: all 0.25s ease;
+}
+
+.option-btn:hover .letter-badge {
+  background: rgba(220, 38, 38, 0.2);
+  color: var(--accent-crimson);
+}
+
+.option-btn.correct .letter-badge {
+  background: var(--accent-teal);
+  color: white;
+}
+
+.option-btn.near .letter-badge {
+  background: var(--accent-amber);
+  color: white;
+}
+
+.option-btn.wrong .letter-badge {
+  background: var(--accent-crimson);
+  color: white;
+}
+
+/* Feedback Panel */
+.feedback-panel {
+  border-radius: 16px;
+  padding: 20px 24px;
+  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.feedback-panel.correct {
+  background: linear-gradient(145deg, rgba(20, 184, 166, 0.1) 0%, rgba(20, 184, 166, 0.05) 100%);
+  border: 1px solid rgba(20, 184, 166, 0.3);
+}
+
+.feedback-panel.near {
+  background: linear-gradient(145deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.feedback-panel.wrong {
+  background: linear-gradient(145deg, rgba(220, 38, 38, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+}
+
+/* Next Button */
+.next-btn {
+  background: linear-gradient(135deg, var(--accent-crimson) 0%, #b91c1c 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 32px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 20px rgba(220, 38, 38, 0.3);
+}
+
+.next-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(220, 38, 38, 0.4);
+}
+
+.next-btn:active {
+  transform: translateY(0);
+}
+
+/* Score Pills */
+.score-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.score-pill.correct {
+  background: rgba(20, 184, 166, 0.15);
+  color: #14b8a6;
+}
+
+.score-pill.near {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.score-pill.wrong {
+  background: rgba(220, 38, 38, 0.15);
+  color: #ef4444;
+}
+
+/* Floating particles animation */
+.particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(220, 38, 38, 0.3);
+  border-radius: 50%;
+  animation: float 20s infinite linear;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* Question text styling */
+.question-text {
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  font-weight: 400;
+}
+
+.question-text strong {
+  color: var(--accent-crimson);
+  font-weight: 600;
+}
+
+/* Case number badge */
+.case-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent-crimson);
+  margin-bottom: 16px;
+}
+
+/* Source tag */
+.source-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  background: rgba(148, 163, 184, 0.1);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-top: 12px;
+}
+
+/* Dashboard styling */
+.dashboard-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  padding: 24px;
+}
+
+/* Pulse animation for progress */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(220, 38, 38, 0.5);
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.3);
+}
+
+/* Icon animations */
+.icon-spin {
+  animation: iconSpin 0.5s ease-out;
+}
+
+@keyframes iconSpin {
+  from {
+    transform: rotate(-180deg) scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Status indicators */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot.active {
+  background: var(--accent-crimson);
+  box-shadow: 0 0 8px var(--accent-crimson);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .glass-card {
+    margin: 16px;
+    border-radius: 16px;
+  }
+
+  .question-text {
+    font-size: 15px;
+  }
+
+  .option-btn {
+    padding: 14px 16px;
+  }
+}
+</style>
+</head>
+<body class="p-4 md:p-8">
+<div class="particles" id="particles"></div>
+
+<div class="relative z-10 max-w-4xl mx-auto">
+  <!-- Header -->
+  <header class="mb-8 text-center">
+    <div class="inline-flex items-center gap-3 mb-4">
+      <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center shadow-lg shadow-red-900/30">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+        </svg>
+      </div>
+      <h1 class="title-font text-2xl md:text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+        Hematology Clinical Mastery
+      </h1>
+    </div>
+    <p class="text-gray-500 text-sm">Koas Edition — 300 Clinical Cases</p>
+  </header>
+
+  <!-- Main Quiz Card -->
+  <div id="app" class="glass-card rounded-2xl p-6 md:p-8">
+
+    <!-- Progress Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-gray-800">
+      <!-- Progress Circle -->
+      <div class="flex items-center gap-4">
+        <div class="progress-ring">
+          <svg width="60" height="60">
+            <circle class="progress-ring-circle progress-ring-bg" cx="30" cy="30" r="25"/>
+            <circle class="progress-ring-circle progress-ring-fill" id="progressCircle" cx="30" cy="30" r="25"/>
+          </svg>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <span class="text-xs font-semibold text-gray-400" id="progressPercent">0%</span>
+          </div>
+        </div>
+        <div>
+          <div class="text-sm text-gray-500 mb-1">Progress</div>
+          <div class="text-lg font-semibold" id="progressText">1 / 300</div>
+        </div>
+      </div>
+
+      <!-- Score Pills -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <div class="score-pill correct">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+          <span id="scoreCorrect">0</span>
+        </div>
+        <div class="score-pill near">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          <span id="scoreNear">0</span>
+        </div>
+        <div class="score-pill wrong">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+          <span id="scoreWrong">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Question -->
+    <div id="qText" class="question-text mb-8"></div>
+
+    <!-- Options -->
+    <div id="options" class="space-y-3 mb-6"></div>
+
+    <!-- Feedback -->
+    <div id="feedback" class="hidden mb-6">
+      <div class="flex items-start gap-4">
+        <div id="feedbackIcon" class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center"></div>
+        <div class="flex-1">
+          <div id="feedbackTitle" class="font-semibold mb-1"></div>
+          <div id="feedbackText" class="text-sm text-gray-400 leading-relaxed"></div>
+          <div id="feedbackSource" class="source-tag"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Next Button -->
+    <div class="flex justify-end">
+      <button id="next" class="next-btn hidden flex items-center gap-2">
+        Next Case
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" class="hidden mt-6">
+    <div class="glass-card rounded-2xl p-8 text-center">
+      <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center shadow-lg shadow-red-900/30">
+        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <h2 class="title-font text-3xl font-bold mb-2">Session Complete!</h2>
+      <p class="text-gray-500 mb-8">Review your performance below</p>
+
+      <div class="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto mb-8">
+        <div class="dashboard-card">
+          <h3 class="text-sm font-medium text-gray-500 mb-4">Answer Distribution</h3>
+          <canvas id="chart1"></canvas>
+        </div>
+        <div class="dashboard-card">
+          <h3 class="text-sm font-medium text-gray-500 mb-4">Total Score</h3>
+          <canvas id="chart2"></canvas>
+        </div>
+      </div>
+
+      <button onclick="location.reload()" class="next-btn inline-flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        Start New Session
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- PARTICLES ----------
+function createParticles() {
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 20; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.animationDelay = Math.random() * 20 + 's';
+    particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+    container.appendChild(particle);
+  }
+}
+createParticles();
+
+// ---------- REAL QUESTION BANK (BATCH 1 - 30 SOAL KOAS) ----------
+const quizData = [
+{
+text:`Kasus 1: Anak laki-laki 4 tahun datang dengan pucat kronis, nafsu makan rendah, pica (makan tanah). PF: konjungtiva pucat, tidak splenomegali. Lab: Hb 7 g/dL, MCV 62 fL, RDW 18%, ferritin ↓, TIBC ↑, RBC rendah. Diagnosis?`,
+options:[
+{t:"Anemia defisiensi besi",s:"benar",e:"Klasik IDA pada anak dengan diet buruk/pica; mikrositik, RDW tinggi, ferritin rendah, TIBC tinggi.",src:"Hoffbrand"},
+{t:"Thalassemia trait",s:"mendekati",e:"Mikrositik tapi RBC count biasanya meningkat dan ferritin normal.",src:"Hoffbrand"},
+{t:"Anemia kronik (ACD)",s:"mendekati",e:"Ferritin normal/tinggi, tidak ada pica khas.",src:"Robbins"},
+{t:"Sideroblastik",s:"salah",e:"Ferritin tinggi, ring sideroblast pada sumsum tulang.",src:"Hoffbrand"}
+]
+},
+{
+text:`Kasus 2: Wanita 32 tahun hamil 7 bulan, lemas dan pusing. PF: pucat, takikardia ringan. Lab: Hb 8.2 g/dL, MCV 78 fL, ferritin ↓, TIBC ↑, RDW ↑. Diagnosis?`,
+options:[
+{t:"Anemia defisiensi besi",s:"benar",e:"Kebutuhan besi meningkat saat hamil; mikrositik hipokrom klasik dengan ferritin rendah.",src:"Hoffbrand"},
+{t:"Thalassemia trait",s:"mendekati",e:"Mikrositik tapi ferritin normal dan RBC count tinggi.",src:"Hoffbrand"},
+{t:"Anemia defisiensi folat",s:"mendekati",e:"Biasanya makrositik, bukan mikrositik.",src:"Robbins"},
+{t:"ACD",s:"salah",e:"Ferritin normal/tinggi, TIBC rendah.",src:"Robbins"}
+]
+},
+{
+text:`Kasus 3: Pria 28 tahun Indonesia, tidak ada keluhan signifikan, screening rutin. Lab: Hb 11.5 g/dL, MCV 68 fL, RBC 6.2 juta/μL, ferritin normal, RDW normal. Diagnosis?`,
+options:[
+{t:"Thalassemia trait (beta)",s:"benar",e:"Mikrositik hipokrom dengan RBC count tinggi khas thal trait, ferritin normal.",src:"Hoffbrand"},
+{t:"Anemia defisiensi besi",s:"mendekati",e:"Ferritin rendah dan RBC count biasanya rendah.",src:"Robbins"},
+{t:"ACD",s:"mendekati",e:"Biasanya normositik atau mikrositik ringan dengan ferritin tinggi.",src:"Robbins"},
+{t:"Sideroblastik",s:"salah",e:"Ferritin tinggi dan sering ada ring sideroblast.",src:"Hoffbrand"}
+]
+},
+{
+text:`Kasus 4: Wanita 58 tahun dengan rheumatoid arthritis aktif 5 tahun. Hb 9.5 g/dL, MCV 82 fL, ferritin ↑, TIBC ↓, CRP ↑. Mekanisme anemia?`,
+options:[
+{t:"Peningkatan hepsidin (ACD)",s:"benar",e:"Inflamasi kronis → hepsidin ↑ → besi terperangkap di makrofag, ferritin tinggi, TIBC rendah.",src:"Robbins"},
+{t:"Defisiensi besi",s:"mendekati",e:"Ferritin rendah dan TIBC tinggi, bukan sebaliknya.",src:"Hoffbrand"},
+{t:"Anemia hemolitik",s:"mendekati",e:"Reticulosit rendah, tidak ada marker hemolisis.",src:"Robbins"},
+{t:"Defisiensi B12",s:"salah",e:"Makrositik dan tidak ada hubungan dengan inflamasi.",src:"Robbins"}
+]
+},
+{
+text:`Kasus 5: Pria 68 tahun alkoholik kronis, lemas, tidak ada neuropati. Hb 10 g/dL, MCV 108 fL, neutrofil tanpa hipersegmen, retic normal. Diagnosis?`,
+options:[
+{t:"Makrositik non-megaloblastik (efek alkohol)",s:"benar",e:"Alkohol toksisitas langsung sumsum tulang, tanpa hipersegmen neutrofil.",src:"Hoffbrand"},
+{t:"Defisiensi folat",s:"mendekati",e:"Sering pada alkoholik tapi harus ada hipersegmen neutrofil.",src:"Robbins"},
+{t:"Defisiensi B12",s:"mendekati",e:"Biasanya ada neuropati dan hipersegmen.",src:"Robbins"},
+{t:"Thalassemia",s:"salah",e:"Mikrositik, bukan makrositik.",src:"Robbins"}
+]
+},
+{
+text:`Kasus 6: Wanita 45 tahun vegetarian ketat, parestesia tangan-kaki, glossitis. Hb 8 g/dL, MCV 118 fL, hipersegmen neutrofil, B12 serum ↓. Mekanisme?`,
+options:[
+{t:"Gangguan sintesis DNA (defisiensi B12)",s:"benar",e:"Megaloblastik karena defisiensi B12; neuropati sensorik khas.",src:"Robbins"},
+{t:"Gangguan sintesis heme",s:"mendekati",e:"Sideroblastik, bukan makrositik megaloblastik.",src:"Hoffbrand"},
+{t:"Hemolisis kronis",s:"mendekati",e:"MCV biasanya normal, retic tinggi.",src:"Robbins"},
+{t:"Defisiensi besi",s:"salah",e:"Mikrositik hipokrom.",src:"Robbins"}
+]
+},
+{
+text:`Kasus 7: Pria 55 tahun gagal ginjal kronis stadium 4. Hb 9 g/dL, MCV 88 fL, retic rendah, EPO rendah. Diagnosis?`,
+options:[
+{t:"Anemia normositik karena defisiensi EPO + ACD",s:"benar",e:"CKD menurunkan produksi EPO dan inflamasi kronis.",src:"Hoffbrand"},
+{t:"Anemia defisiensi besi",s:"mendekati",e:"MCV mikrositik dan ferritin rendah.",src:"Robbins"},
+{t:"Anemia hemolitik",s:"mendekati",e:"Reticulosit tinggi dan marker hemolisis positif.",src:"Robbins"},
+{t:"Megaloblastik B12",s:"salah",e:"Makrositik dengan hipersegmen.",src:"Robbins"}
+]
+},
+{
+text:`Kasus 8: Wanita 35 tahun SLE, kuning, lemas mendadak. Hb 7 g/dL, MCV 92 fL, retic 12%, bilirubin indirek ↑, haptoglobin ↓, Coombs direct (+). Diagnosis?`,
+options:[
+{t:"Anemia hemolitik autoimun hangat (AIHA warm)",s:"benar",e:"Coombs positif, retic tinggi, hemolisis ekstravaskular khas AIHA pada SLE.",src:"Hoffbrand"},
+{t:"G6PD defisiensi",s:"mendekati",e:"Pemicu obat/infeksi, bite cell, Coombs negatif.",src:"Hoffbrand"},
+{t:"PNH",s:"mendekati",e:"Hemoglobinuria nokturnal, flow cytometry CD55/59 defisiensi.",src:"Robbins"},
+{t:"Defisiensi besi",s:"salah",e:"Mikrositik, retic rendah.",src:"Robbins"}
+]
+},
+{
+text:`Kasus 9: Pria 22 tahun, demam malaria, minum primaquine. Hb jatuh dari 13 ke 8 g/dL, MCV 90 fL, bite cell dan blister cell pada hapusan darah. Diagnosis?`,
+options:[
+{t:"Defisiensi G6PD (hemolisis oksidatif)",s:"benar",e:"Pemicu primaquine → hemolisis intravaskular pada defisiensi G6PD.",src:"Hoffbrand"},
+{t:"AIHA",s:"mendekati",e:"Coombs positif, spherocyte dominan.",src:"Robbins"},
+{t:"Hereditary spherocytosis",s:"mendekati",e:"Osmotic fragility ↑ seumur hidup, bukan akut.",src:"Hoffbrand"},
+{t:"Anemia aplastik",s:"salah",e:"Pancytopenia, retic rendah.",src:"Robbins"}
+]
+},
+{
+text:`Kasus 10: Anak laki-laki 8 tahun, riwayat keluarga anemia, splenomegali ringan. Hb 10 g/dL, MCV 85 fL, retic 8%, spherocyte banyak, osmotic fragility ↑. Diagnosis?`,
+options:[
+{t:"Hereditary spherocytosis",s:"benar",e:"Spherocyte + osmotic fragility ↑ + riwayat keluarga autosomal dominant.",src:"Hoffbrand"},
+{t:"AIHA",s:"mendekati",e:"Coombs positif, sering Coombs (+) spherocyte.",src:"Robbins"},
+{t:"G6PD",s:"mendekati",e:"Bite cell, pemicu obat/infeksi.",src:"Hoffbrand"},
+{t:"Thalassemia major",s:"salah",e:"Mikrositik berat, target cell dominan.",src:"Robbins"}
+]
+},
+{
+text:`Kasus 11: Pria 40 tahun, hemoglobinuria pagi hari berulang, trombosis vena dalam. Hb 8 g/dL, retic 10%, LDH ↑, haptoglobin ↓, flow cytometry CD55/CD59 negatif. Diagnosis?`,
+options:[
+{t:"Hemoglobinuria paroksismal nokturnal (PNH)",s:"benar",e:"Defek GPI anchor → hemolisis intravaskular nokturnal + trombosis.",src:"Hoffbrand"},
+{t:"AIHA",s:"mendekati",e:"Coombs positif, tidak ada trombosis khas.",src:"Robbins"},
+{t:"G6PD",s:"mendekati",e:"Episodik setelah pemicu, bukan nokturnal.",src:"Hoffbrand"},
+{t:"Defisiensi besi",s:"salah",e:"Mikrositik, tidak ada hemoglobinuria.",src:"Robbins"}
+]
+},
+{
+text:`Kasus 12: Pria 25 tahun Afrika, nyeri dada dan punggung hebat, demam. Hb 8 g/dL, MCV 85 fL, retic 15%, hapusan: sickle cell banyak. Diagnosis?`,
+options:[
+{t:"Krisis vaso-oklusif sickle cell disease",s:"benar",e:"HbSS atau sickle cell disease; nyeri akut + retic tinggi.",src:"Hoffbrand"},
+{t:"Thalassemia intermedia",s:"mendekati",e:"Mikrositik, target cell, bukan sickle cell.",src:"Hoffbrand"},
+{t:"AIHA",s:"mendekati",e:"Coombs positif, spherocyte.",src:"Robbins"},
+{t:"Anemia aplastik",s:"salah",e:"Retic rendah, pancytopenia.",src:"Robbins"}
+]
+},
+{
+text:`Kasus 13: Anak perempuan 6 tahun, pucat berat sejak usia 1 tahun, transfusi rutin. Hb 6 g/dL pre-transfusi, MCV 65 fL, HbF ↑ tinggi, splenomegali masif. Diagnosis?`,
+options:[
+{t:"Thalassemia mayor (beta)",s:"benar",e:"Transfusi dependen, mikrositik berat, HbF tinggi, hepatosplenomegali.",src:"Hoffbrand"},
+{t:"Thalassemia trait",s:"mendekati",e:"Hb ringan/normal, tidak transfusi dependen.",src:"Hoffbrand"},
+{t:"Anemia defisiensi besi",s:"mendekati",e:"Ferritin rendah, tidak ada HbF tinggi.",src:"Robbins"},
+{t:"Sickle cell disease",s:"salah",e:"Sickle cell pada hapusan, bukan target cell dominan.",src:"Robbins"}
+]
+},
+{
+text:`Kasus 14: Pria 70 tahun, lemas 6 bulan, tidak ada perdarahan. Hb 8 g/dL, MCV 88 fL, WBC 3.500, platelet 80.000, pancytopenia, sumsum hiposeluler. Diagnosis?`,
+options:[
+{t:"Anemia aplastik",s:"benar",e:"Pancytopenia + sumsum hiposeluler tanpa infiltrasi maligna.",src:"Hoffbrand"},
+{t:"MDS",s:"mendekati",e:"Sumsum hiper atau normoseluler dengan displasia.",src:"Robbins"},
+{t:"Leukemia akut",s:"mendekati",e:"Blast >20% di sumsum/perifer.",src:"Robbins"},
+{t:"AIHA",s:"salah",e:"Retic tinggi, Coombs positif.",src:"Robbins"}
+]
+},
+{
+text:`Kasus 15: Wanita 72 tahun, anemia refrakter, MCV 105 fL, ring sideroblast 30% pada sumsum, displasia eritroid. Diagnosis?`,
+options:[
+{t:"Mielodisplasia (MDS dengan ring sideroblast)",s:"benar",e:"Displasia + ring sideroblast khas MDS tipe RS.",src:"Hoffbrand"},
+{t:"Anemia sideroblastik kongenital",s:"mendekati",e:"Biasanya anak, bukan usia lanjut.",src:"Hoffbrand"},
+{t:"Defisiensi B12",s:"mendekati",e:"Megaloblastik tanpa ring sideroblast.",src:"Robbins"},
+{t:"Anemia aplastik",s:"salah",e:"Sumsum hiposeluler tanpa displasia.",src:"Robbins"}
+]
+},
+{
+text:`Kasus 16: Pria 65 tahun, nyeri tulang, anemia, gagal ginjal, protein monoklonal serum. Hb 8 g/dL, MCV 90 fL, kalsium ↑, kreatinin ↑, lytic lesion pada X-ray. Diagnosis?`,
+options:[
+{t:"Multiple myeloma",s:"benar",e:"CRAB criteria (hyperCalcemia, Renal failure, Anemia, Bone lesion) + M-protein.",src:"Robbins"},
+{t:"MDS",s:"mendekati",e:"Displasia sumsum, tidak ada M-protein atau lytic lesion.",src:"Hoffbrand"},
+{t:"Anemia aplastik",s:"mendekati",e:"Pancytopenia tanpa CRAB.",src:"Robbins"},
+{t:"Thalassemia",s:"salah",e:"Mikrositik sejak kecil, bukan lytic lesion.",src:"Hoffbrand"}
+]
+},
+{
+text:`Kasus 17: Anak laki-laki 5 tahun, memar mudah, petechiae banyak, platelet 15.000/μL, Hb & WBC normal. Diagnosis?`,
+options:[
+{t:"ITP (Immune Thrombocytopenia)",s:"benar",e:"Trombositopenia terisolasi pasca infeksi virus pada anak.",src:"Hoffbrand"},
+{t:"TTP",s:"mendekati",e:"Ada MAHA, demam, gangguan neuro/renal.",src:"Robbins"},
+{t:"DIC",s:"mendekati",e:"PT/aPTT memanjang, fibrinogen rendah.",src:"Robbins"},
+{t:"Hemofilia A",s:"salah",e:"Defek faktor VIII, perdarahan sendi, bukan petechiae.",src:"Hoffbrand"}
+]
+},
+{
+text:`Kasus 18: Wanita 42 tahun, demam, petechiae, ikterus, oliguria, neuro kejang. Hb 7 g/dL, platelet 20.000, schistocyte banyak, LDH ↑, kreatinin ↑. Diagnosis?`,
+options:[
+{t:"Trombotic Thrombocytopenic Purpura (TTP)",s:"benar",e:"Pentad klasik: MAHA + trombositopenia + neuro + renal + demam.",src:"Robbins"},
+{t:"DIC",s:"mendekati",e:"Fibrinogen rendah, PT/aPTT memanjang, sepsis trigger.",src:"Robbins"},
+{t:"ITP",s:"mendekati",e:"Trombositopenia terisolasi tanpa MAHA.",src:"Hoffbrand"},
+{t:"AIHA",s:"salah",e:"Coombs positif, spherocyte, bukan schistocyte.",src:"Robbins"}
+]
+},
+{
+text:`Kasus 19: Pria 60 tahun sepsis berat pasca operasi. Hb 9 g/dL, platelet 40.000, PT & aPTT memanjang, fibrinogen ↓, D-dimer ↑. Mekanisme?`,
+options:[
+{t:"Koagulasi intravaskular diseminata (DIC)",s:"benar",e:"Konsumsi faktor koagulasi & platelet akibat sepsis.",src:"Robbins"},
+{t:"ITP",s:"mendekati",e:"Trombositopenia terisolasi tanpa koagulopati.",src:"Hoffbrand"},
+{t:"TTP",s:"mendekati",e:"Schistocyte dominan + neuro/renal berat.",src:"Robbins"},
+{t:"Hemofilia",s:"salah",e:"Defek faktor tunggal, bukan konsumsi luas.",src:"Hoffbrand"}
+]
+},
+{
+text:`Kasus 20: Anak laki-laki 7 tahun, perdarahan sendi berulang (hemartrosis). PT normal, aPTT memanjang, faktor VIII <1%. Diagnosis?`,
+options:[
+{t:"Hemofilia A (defisiensi faktor VIII)",s:"benar",e:"X-linked, perdarahan dalam (sendi), aPTT memanjang.",src:"Hoffbrand"},
+{t:"von Willebrand disease",s:"mendekati",e:"Mukosa bleed dominan, faktor VIII ringan turun.",src:"Hoffbrand"},
+{t:"Defisiensi vitamin K",s:"mendekati",e:"PT & aPTT keduanya memanjang.",src:"Robbins"},
+{t:"ITP",s:"salah",e:"Trombositopenia, bukan koagulopati.",src:"Robbins"}
+]
+},
+{
+text:`Kasus 21: Wanita 25 tahun, menorrhagia berat, perdarahan gusi. Platelet normal, PT normal, aPTT normal, ristocetin cofactor rendah. Diagnosis?`,
+options:[
+{t:"von Willebrand disease",s:"benar",e:"Mukosa bleed + ristocetin cofactor ↓ khas vWD tipe 1.",src:"Hoffbrand"},
+{t:"Hemofilia A",s:"mendekati",e:"Laki-laki, perdarahan sendi, aPTT memanjang berat.",src:"Hoffbrand"},
+{t:"ITP",s:"mendekati",e:"Trombositopenia berat.",src:"Robbins"},
+{t:"DIC",s:"salah",e:"Koagulopati luas dengan fibrinogen rendah.",src:"Robbins"}
+]
+},
+{
+text:`Kasus 22: Bayi 3 bulan, perdarahan umbilikus, ibu riwayat malabsorpsi. PT memanjang, aPTT normal, faktor II & VII rendah. Diagnosis?`,
+options:[
+{t:"Defisiensi vitamin K",s:"benar",e:"Faktor II, VII, IX, X bergantung vitamin K; PT memanjang dulu.",src:"Robbins"},
+{t:"Hemofilia A",s:"mendekati",e:"aPTT memanjang, faktor VIII rendah.",src:"Hoffbrand"},
+{t:"von Willebrand",s:"mendekati",e:"Ristocetin cofactor rendah.",src:"Hoffbrand"},
+{t:"DIC",s:"salah",e:"Fibrinogen & platelet juga turun.",src:"Robbins"}
+]
+},
+{
+text:`Kasus 23: Wanita 55 tahun celiac disease, lemas + parestesia. Hb 8 g/dL, MCV 110 fL (mikro-makro campuran), ferritin ↓, B12 ↓, folat ↓. Diagnosis?`,
+options:[
+{t:"Anemia campuran (defisiensi besi + B12/folat)",s:"benar",e:"Malabsorpsi celiac → defisiensi ganda; MCV campuran.",src:"Hoffbrand"},
+{t:"Defisiensi besi saja",s:"mendekati",e:"MCV mikrositik murni.",src:"Robbins"},
+{t:"Defisiensi B12 saja",s:"mendekati",e:"Makrositik murni dengan hipersegmen.",src:"Robbins"},
+{t:"Thalassemia trait",s:"salah",e:"Ferritin normal, RBC count tinggi.",src:"Hoffbrand"}
+]
+},
+{
+text:`Kasus 24: Pria 35 tahun SLE, anemia + trombositopenia. Hb 8 g/dL, retic 10%, Coombs (+), platelet 30.000. Diagnosis?`,
+options:[
+{t:"Evans syndrome (AIHA + ITP)",s:"benar",e:"Autoimun ganda: hemolisis + trombositopenia imun.",src:"Hoffbrand"},
+{t:"TTP",s:"mendekati",e:"Schistocyte + ADAMTS13.",src:"Robbins"},
+{t:"DIC",s:"mendekati",e:"Fibrinogen rendah.",src:"Robbins"},
+{t:"PNH",s:"salah",e:"Flow cytometry CD55/59 defisiensi.",src:"Hoffbrand"}
+]
+},
+{
+text:`Kasus 25: Pria 28 tahun, hemoglobinuria nokturnal + trombosis mesenterika. Hb 7 g/dL, retic 12%, LDH sangat ↑, flow cytometry CD59 negatif. Diagnosis?`,
+options:[
+{t:"Hemoglobinuria paroksismal nokturnal (PNH)",s:"benar",e:"Hemolisis intravaskular + trombosis vena abdomen khas.",src:"Hoffbrand"},
+{t:"G6PD defisiensi",s:"mendekati",e:"Episodik setelah obat, bite cell.",src:"Hoffbrand"},
+{t:"AIHA",s:"mendekati",e:"Coombs positif.",src:"Robbins"},
+{t:"Thalassemia",s:"salah",e:"Kronis mikrositik.",src:"Robbins"}
+]
+},
+{
+text:`Kasus 26: Anak laki-laki 12 tahun, riwayat infeksi virus berat 2 bulan lalu. Pancytopenia berat, sumsum hiposeluler 10%. Diagnosis?`,
+options:[
+{t:"Anemia aplastik (post-viral)",s:"benar",e:"Hiposeluler sumsum tanpa displasia atau blast.",src:"Hoffbrand"},
+{t:"MDS",s:"mendekati",e:"Displasia dan sumsum normo/hiper.",src:"Robbins"},
+{t:"Leukemia akut",s:"mendekati",e:"Blast ≥20%.",src:"Robbins"},
+{t:"ITP",s:"salah",e:"Hanya trombositopenia terisolasi.",src:"Hoffbrand"}
+]
+},
+{
+text:`Kasus 27: Pria 50 tahun, demam, perdarahan mukosa, WBC 80.000 dengan blast 40%, Auer rod (+). Diagnosis?`,
+options:[
+{t:"Leukemia mieloblastik akut (AML)",s:"benar",e:"Blast ≥20% + Auer rod khas AML.",src:"Robbins"},
+{t:"MDS",s:"mendekati",e:"Blast <20%, displasia kronis.",src:"Hoffbrand"},
+{t:"Anemia aplastik",s:"mendekati",e:"Pancytopenia tanpa blast.",src:"Robbins"},
+{t:"Multiple myeloma",s:"salah",e:"Plasmacytosis + M-protein.",src:"Robbins"}
+]
+},
+{
+text:`Kasus 28: Wanita 65 tahun, ikterus, splenomegali, Coombs negatif, hapusan: spherocyte & polychromasia. Diagnosis?`,
+options:[
+{t:"Hemolisis herediter (spherocytosis) atau sekunder",s:"benar",e:"Coombs negatif + spherocyte banyak meski Coombs biasanya negatif pada herediter.",src:"Hoffbrand"},
+{t:"AIHA hangat",s:"mendekati",e:"Coombs positif.",src:"Robbins"},
+{t:"G6PD",s:"mendekati",e:"Bite cell & Heinz body.",src:"Hoffbrand"},
+{t:"Defisiensi besi",s:"salah",e:"Mikrositik tanpa reticulocytosis.",src:"Robbins"}
+]
+},
+{
+text:`Kasus 29: Pria 40 tahun, nyeri perut hebat, hemoglobinuria gelap setelah infeksi. Hb 6 g/dL, retic 18%, LDH ↑, haptoglobin ↓. Diagnosis?`,
+options:[
+{t:"Hemoglobinuria paroksismal nokturnal (PNH) flare",s:"benar",e:"Hemolisis intravaskular berat dipicu infeksi.",src:"Hoffbrand"},
+{t:"TTP",s:"mendekati",e:"Schistocyte + gangguan neuro/renal berat.",src:"Robbins"},
+{t:"AIHA",s:"mendekati",e:"Coombs positif.",src:"Robbins"},
+{t:"Thalassemia",s:"salah",e:"Kronis mikrositik sejak kecil.",src:"Hoffbrand"}
+]
+},
+{
+text:`Kasus 30: Anak perempuan 9 tahun, pucat, splenomegali, Hb 9 g/dL, MCV 70 fL, Hb elektroforesis: HbE 30%, HbF ↑. Diagnosis?`,
+options:[
+{t:"Hb E/beta thalassemia (compound heterozygous)",s:"benar",e:"Umum di Asia Tenggara; mikrositik sedang dengan HbE + thal trait.",src:"Hoffbrand"},
+{t:"Thalassemia trait sederhana",s:"mendekati",e:"Hb ringan, tidak splenomegali.",src:"Hoffbrand"},
+{t:"Anemia defisiensi besi",s:"mendekati",e:"Ferritin rendah.",src:"Robbins"},
+{t:"Sickle cell",s:"salah",e:"Sickle cell pada hapusan.",src:"Robbins"}
+]
+}
+];
+
+// DOM Elements
+const qText = document.getElementById('qText');
+const optionsDiv = document.getElementById('options');
+const feedback = document.getElementById('feedback');
+const feedbackIcon = document.getElementById('feedbackIcon');
+const feedbackTitle = document.getElementById('feedbackTitle');
+const feedbackText = document.getElementById('feedbackText');
+const feedbackSource = document.getElementById('feedbackSource');
+const nextBtn = document.getElementById('next');
+const progressText = document.getElementById('progressText');
+const progressCircle = document.getElementById('progressCircle');
+const progressPercent = document.getElementById('progressPercent');
+const scoreCorrect = document.getElementById('scoreCorrect');
+const scoreNear = document.getElementById('scoreNear');
+const scoreWrong = document.getElementById('scoreWrong');
+
+let i = 0, correct = 0, near = 0, wrong = 0;
+const letters = ['A', 'B', 'C', 'D'];
+
+function updateProgress() {
+  const percent = Math.round((i / quizData.length) * 100);
+  const circumference = 2 * Math.PI * 25;
+  const offset = circumference - (percent / 100) * circumference;
+  progressCircle.style.strokeDashoffset = offset;
+  progressPercent.textContent = percent + '%';
+  progressText.textContent = `${i + 1} / ${quizData.length}`;
+}
+
+function updateScore() {
+  scoreCorrect.textContent = correct;
+  scoreNear.textContent = near;
+  scoreWrong.textContent = wrong;
+}
+
+function render() {
+  const q = quizData[i];
+
+  // Parse case number and content
+  const caseMatch = q.text.match(/Kasus (\d+):\s*(.+)/);
+  const caseNum = caseMatch ? caseMatch[1] : (i + 1);
+  const caseContent = caseMatch ? caseMatch[2] : q.text;
+
+  qText.innerHTML = `
+    <div class="case-badge">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+      </svg>
+      Case ${caseNum}
+    </div>
+    <div class="text-gray-200">${caseContent}</div>
+  `;
+
+  optionsDiv.innerHTML = '';
+  feedback.classList.add('hidden');
+  nextBtn.classList.add('hidden');
+
+  updateProgress();
+  updateScore();
+
+  q.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn w-full flex items-center';
+    btn.innerHTML = `
+      <span class="letter-badge">${letters[idx]}</span>
+      <span class="flex-1 text-gray-200">${opt.t}</span>
+    `;
+    btn.onclick = () => answer(opt, btn);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function answer(opt, btn) {
+  // Disable all buttons
+  [...optionsDiv.children].forEach(b => b.disabled = true);
+
+  // Mark selected button
+  if (opt.s === 'benar') {
+    btn.classList.add('correct');
+    correct++;
+    showFeedback('correct', opt);
+  } else if (opt.s === 'mendekati') {
+    btn.classList.add('near');
+    near++;
+    showFeedback('near', opt);
+    // Highlight correct answer
+    const correctIdx = quizData[i].options.findIndex(o => o.s === 'benar');
+    if (correctIdx >= 0) {
+      optionsDiv.children[correctIdx].classList.add('correct');
+    }
+  } else {
+    btn.classList.add('wrong');
+    wrong++;
+    showFeedback('wrong', opt);
+    // Highlight correct answer
+    const correctIdx = quizData[i].options.findIndex(o => o.s === 'benar');
+    if (correctIdx >= 0) {
+      optionsDiv.children[correctIdx].classList.add('correct');
+    }
+  }
+
+  updateScore();
+  nextBtn.classList.remove('hidden');
+}
+
+function showFeedback(type, opt) {
+  feedback.classList.remove('hidden', 'correct', 'near', 'wrong');
+  feedback.classList.add('feedback-panel', type);
+
+  const icons = {
+    correct: `<svg class="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`,
+    near: `<svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`,
+    wrong: `<svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>`
+  };
+
+  const titles = {
+    correct: 'Correct!',
+    near: 'Close...',
+    wrong: 'Incorrect'
+  };
+
+  const titleColors = {
+    correct: 'text-teal-400',
+    near: 'text-amber-400',
+    wrong: 'text-red-400'
+  };
+
+  feedbackIcon.innerHTML = icons[type];
+  feedbackIcon.className = `flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${type === 'correct' ? 'bg-teal-500/20' : type === 'near' ? 'bg-amber-500/20' : 'bg-red-500/20'}`;
+  feedbackTitle.innerHTML = `<span class="${titleColors[type]}">${titles[type]}</span>`;
+  feedbackText.textContent = opt.e;
+  feedbackSource.textContent = `Source: ${opt.src}`;
+}
+
+nextBtn.onclick = () => {
+  i++;
+  if (i < quizData.length) {
+    render();
+    // Smooth scroll to top of card
+    document.getElementById('app').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else {
+    finish();
+  }
+};
+
+// Dashboard
+function finish() {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('dashboard').classList.remove('hidden');
+
+  // Chart.js defaults for dark theme
+  Chart.defaults.color = '#94a3b8';
+  Chart.defaults.borderColor = 'rgba(148, 163, 184, 0.1)';
+
+  new Chart(document.getElementById('chart1'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Correct', 'Close', 'Incorrect'],
+      datasets: [{
+        data: [correct, near, wrong],
+        backgroundColor: ['#14b8a6', '#f59e0b', '#dc2626'],
+        borderWidth: 0,
+        hoverOffset: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      cutout: '65%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { padding: 20, usePointStyle: true }
+        }
+      }
+    }
+  });
+
+  new Chart(document.getElementById('chart2'), {
+    type: 'bar',
+    data: {
+      labels: ['Your Score'],
+      datasets: [{
+        label: 'Correct Answers',
+        data: [correct],
+        backgroundColor: '#14b8a6',
+        borderRadius: 8,
+        barThickness: 60
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: quizData.length,
+          ticks: { stepSize: 50 }
+        }
+      },
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>
