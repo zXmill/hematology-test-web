@@ -1,6 +1,6 @@
 # Hematology Clinical Mastery (Koas Edition)
 
-A comprehensive web-based learning platform designed for medical students (co-assistants/koas) to master hematology clinical cases through interactive case-based questions.
+A comprehensive web-based learning platform designed for indonesia medical students written in bahasa indonesia (co-assistants/koas) to master hematology clinical cases through interactive case-based questions.
 
 ## Overview
 
